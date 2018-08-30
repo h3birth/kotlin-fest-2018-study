@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Kotlinfest Study</string>
+    <string name="tv_progress_bar_label">coroutine test</string>
 </resources>
