@@ -12,11 +12,12 @@ buildscript {
     repositories {
         google()
         jcenter()
+        maven(url = "https://plugins.gradle.org/m2/")
     }
     dependencies {
-        classpath ("com.android.tools.build:gradle:3.1.0")
-        classpath ("org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version")
-
+        classpath("com.android.tools.build:gradle:3.1.0")
+        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version")
+        classpath("org.jmailen.gradle:kotlinter-gradle:1.16.0")
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
     }
@@ -33,12 +34,12 @@ task("clean", Delete::class) {
     delete = setOf(rootProject.buildDir)
 }
 
-fun countUsage(target: String) : Int {
+fun countUsage(target: String): Int {
     val byteArrayOutputStream = ByteArrayOutputStream()
     exec {
         if (isWindows()) {
             executable = "cmd"
-        }else {
+        } else {
             executable = "sh"
         }
         args("-c", "git grep -l '$target' | wc -l")
@@ -47,19 +48,19 @@ fun countUsage(target: String) : Int {
     return byteArrayOutputStream.toString().trim().toIntOrNull() ?: 0
 }
 
-task("removeUnusedDrawable"){
+task("removeUnusedDrawable") {
     doLast {
         File(rootDir.absolutePath + "/app/src/main/res").walkTopDown().filter {
             it.isFile
-        }.filter{
+        }.filter {
             it.parent.contains("drawable")
-        }.filter{
+        }.filter {
             it.name.endsWith(".png") || it.name.endsWith(".xml")
         }.forEach {
             val name = it.name.substringBefore(".")
             val count1 = countUsage("@drawable/$name")
             val count2 = countUsage("R.drawable.$name")
-            if( count1 == 0 && count2 == 0 ){
+            if (count1 == 0 && count2 == 0) {
                 it.delete()
             }
         }
